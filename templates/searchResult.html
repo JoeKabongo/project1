@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}  {% endblock %}
+
+
+{% block body %}
+  <h2> Result by title<h2>
+    {% for books in results %}
+        <div>
+            {% for data in books %}
+              <p> {{data}} </p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+  <hr>
+  <h2> Result by author name</h2>
+
+
+  <hr>
+  <h2> Result by isbn</h2>
+
+{% endblock %}

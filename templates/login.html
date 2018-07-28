@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}  {% endblock %}
+
+
+{% block body %}
+<div class="middle" >
+  <h2> Log in </h2>
+  <form class="form" action="{{ url_for('login') }}" method="post">
+
+    <label class="sr-only" for="inlineFormInputGroup">Username</label>
+    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+      <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Enter username" name="username">
+    </div>
+    <br>
+
+    <label class="sr-only" for="inlineFormInputGroup">Password</label>
+    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+      <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="Enter password" name="password">
+    </div>
+    <br>
+
+    {% if error %}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{message}}
+      </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Log in</button>
+  </form>
+
+  <p> Don't  have an account? <a href="{{ url_for('signUp') }}"> sign up </a> <p>
+
+</div>
+
+{% endblock %}

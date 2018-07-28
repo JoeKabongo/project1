@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block title %}  {% endblock %}
+
+
+{% block body %}
+  {% if session.user_id %}
+
+  {% else %}
+
+    <div class="middle">
+      <h2> Log in </h2>
+      <form class="form-inline" action="{{ url_for('login') }}" method="post">
+
+        <label class="sr-only" for="inlineFormInputGroup">Username</label>
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <input type="text" class="form-control"  placeholder="Enter username" name="username" required>
+        </div>
+
+        <label class="sr-only" for="inlineFormInputGroup">Password</label>
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <input type="password" class="form-control"  placeholder="Enter password" name="password" required>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary">Log in</button>
+      </form>
+    </div>
+
+
+    <div class="middle">
+      <h2> Sign up </h2>
+      <form class="form-inline" action="{{ url_for('signUp') }}" method="post">
+
+        <label class="sr-only" for="inlineFormInputGroup">Email Address</label>
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <input type="email" class="form-control"  placeholder="Enter email address" name="email" required>
+        </div>
+
+        <label class="sr-only" for="inlineFormInputGroup">Username</label>
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <input type="text" class="form-control"  placeholder="Enter username" name="username" required>
+        </div>
+
+        <label class="sr-only" for="inlineFormInputGroup">Password</label>
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <input type="password" class="form-control"  placeholder="Enter password" name="password" minlength="6" required>
+        </div>
+
+        <label class="sr-only" for="inlineFormInputGroup">Password</label>
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <input type="password" class="form-control"  placeholder="Confirm password" name="passwordConfirmation" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Sign up</button>
+      </form>
+    </div>
+
+    <div class="middle">
+      <h2> Join the  books' universe</h2>
+      <ul>
+        <li> Search for books </li>
+        <li> Look at what other says about books </li>
+        <li> Help other by leaving a review</li>
+      <ul>
+    </div>
+
+  {% endif %}
+
+
+{% endblock %}

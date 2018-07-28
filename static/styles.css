@@ -1,0 +1,17 @@
+.middle {
+  margin: auto;
+  margin-top: 5% !important;
+  width: 65% !important;
+}
+
+#searchButton
+{
+  background-color:white;
+  color: gray;
+}
+
+#searchButton:hover
+{
+  background-color: blue;
+}
+/*# sourceMappingURL=styles.css.map */

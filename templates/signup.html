@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block title %}  {% endblock %}
+
+
+{% block body %}
+
+<div class="middle">
+  <h2> Sign up </h2>
+  <form class="form" action="{{ url_for('signUp') }}" method="post">
+
+    <label class="sr-only" for="inlineFormInputGroup">Email Address</label>
+    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+      <input type="email" class="form-control" id="inlineFormInputGroup" placeholder="Enter email address" name="email" required>
+    </div>
+
+    <br>
+
+    <label class="sr-only" for="inlineFormInputGroup">Username</label>
+    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+      <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Enter username" name="username" required>
+    </div>
+
+    <br>
+
+    <label class="sr-only" for="inlineFormInputGroup">Password</label>
+    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+      <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="Enter password(6 characters long)" name="password"  minlength="6" required>
+    </div>
+    <p> Must be 6 characters or more.
+    <br>
+
+    <label class="sr-only" for="inlineFormInputGroup">Password</label>
+    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+      <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="Confirm password" name="passwordConfirmation" required>
+    </div>
+    <br>
+
+    {% if error %}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{message}}
+      </div>
+    {% endif %}
+    
+    <button type="submit" class="btn btn-primary">Sign up</button>
+  </form>
+
+  <br>
+  <div class="alert alert-danger alert-dismissible" style="display:none;">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    Password must match
+  </div>
+
+  <p> Already has an account? <a href="{{ url_for('login') }}"> Login </a> <p>
+
+</div>
+
+
+{% endblock %}
