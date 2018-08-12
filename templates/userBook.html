@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %} My books {% endblock %}
+
+
+{% block body %}
+  <style>
+    .centered{
+      margin: auto;
+      text-align: center;
+    }
+  </style>
+
+    {% if books %}
+      <h1> You list of books</h2>
+      <table class="table table-striped">
+        {% for book in books %}
+          <tr>
+            <td> <i class="fa fa-book"></i> </td>
+            <td>
+              <a href="{{ url_for('book_page', title=book.title, author=book.author, id=book.id, isbn=book.isbn) }}">
+                  <span class="bookTitle"> {{book.title}}  </span>   <span class="bookAuthor"> by {{book.author}}</span>
+              </a>
+            </td>
+          </tr>
+
+        {% endfor %}
+      </table>
+    {% else %}
+        <div class="centered">
+          You have not added a book yet!
+        </div>
+    {% endif %}
+
+
+{% endblock %}

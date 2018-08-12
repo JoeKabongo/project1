@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %} Update password {% endblock %}
+
+
+{% block body %}
+
+  <div class="middle">
+
+    <h2>Update username</h2>
+
+    <form class="form" action="{{ url_for('update_username') }}" method="post">
+
+
+      <label class="sr-only" for="inlineFormInputGroup">New Username</label>
+      <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Enter new username" name="new_username" required>
+      </div>
+      <br>
+
+      <label class="sr-only" for="inlineFormInputGroup">Password </label>
+      <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+        <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="enter password" name="password" required>
+      </div>
+      <br>
+
+
+
+      {% if error %}
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          {{message}}
+        </div>
+      {% endif %}
+
+      {% if success %}
+        <div class="alert alert-success alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          {{message}}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary">Save change</button>
+    </form>
+
+  </div>
+
+{% endblock %}

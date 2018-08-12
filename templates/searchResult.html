@@ -1,23 +1,103 @@
 {% extends "layout.html" %}
 
-{% block title %}  {% endblock %}
+{% block title %} Seach result for {{searchInfo}} {% endblock %}
 
 
 {% block body %}
-  <h2> Result by title<h2>
-    {% for books in results %}
-        <div>
-            {% for data in books %}
-              <p> {{data}} </p>
+
+  {% if byCategory %}
+    <h1> Search results by {{byCategory}}</h1>
+    <table class="table table-striped">
+      {% for result in results %}
+
+          <tr>
+            <td> <i class="fa fa-book"></i> </td>
+            <td>
+              <a href="{{ url_for('book_page', title=result.title, author=result.author, id=result.id, isbn=result.isbn) }}">
+                  <span class="bookTitle"> {{result.title}}  </span>   <span class="bookAuthor"> by {{result.author}}</span>
+              </a>
+            </td>
+          </tr>
+      {% endfor %}
+    </table>
+
+
+
+  {% else %}
+
+    <div style="margin:10px;">
+
+      <details>
+        <summary> Results by title</summary>
+
+        {% if titles %}
+          <table class="table table-striped">
+            {% for books in titles %}
+              <tr>
+                <td> <i class="fa fa-book"></i> </td>
+                <td>
+                  <a href="{{ url_for('book_page', title=books.title, author=books.author, id=books.id, isbn=books.isbn) }}">
+                      <span class="bookTitle"> {{books.title}}  </span>   <span class="bookAuthor"> by {{books.author}}</span>
+                  </a>
+                </td>
+              </tr>
+
             {% endfor %}
-        </div>
-    {% endfor %}
+          </table>
+        {% else %}
+          No result found
+        {% endif %}
+      </details>
+      <hr>
 
-  <hr>
-  <h2> Result by author name</h2>
+      <details>
+        <summary> Results by author name</summary>
 
+        {% if authors %}
+          <table class="table table-striped">
+            {% for books in authors %}
+              <tr>
+                <td> <i class="fa fa-book"></i> </td>
+                <td>
+                  <a href="{{ url_for('book_page', title=books.title, author=books.author, id=books.id, isbn=books.isbn) }}">
+                      <span class="bookTitle"> {{books.title}}  </span>   <span class="bookAuthor"> by {{books.author}}</span>
+                  </a>
+                </td>
+              </tr>
 
-  <hr>
-  <h2> Result by isbn</h2>
+            {% endfor %}
+          </table>
+        {% else %}
+          No result found
+        {% endif %}
+
+      </details>
+      <hr>
+
+      <details>
+        <summary> Results by isbn</summary>
+
+        {% if isbn %}
+          <table class="table table-striped">
+            {% for books in isbn %}
+              <tr>
+                <td> <i class="fa fa-book"></i> </td>
+                <td>
+                  <a href="{{ url_for('book_page', title=books.title, author=books.author, id=books.id, isbn=books.isbn) }}">
+                      <span class="bookTitle"> {{books.title}}  </span>   <span class="bookAuthor"> by {{books.author}}</span>
+                  </a>
+                </td>
+              </tr>
+
+            {% endfor %}
+          </table>
+        {% else %}
+          No result found
+        {% endif %}
+      </details>
+
+    </div>
+
+  {% endif %}
 
 {% endblock %}

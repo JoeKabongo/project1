@@ -5,6 +5,61 @@
 
 {% block body %}
   {% if session.user_id %}
+  <h1> Search books</h1>
+  <div class="middle">
+
+    <h2>By isbn </h2>
+
+    <form class="form" action="{{ url_for('search_by_isbn') }}" method="post">
+
+
+      <label class="sr-only" for="inlineFormInputGroup">Isbn</label>
+      <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Enter isbn" name="isbn" required>
+      </div>
+      <br>
+
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+  </div>
+
+  <div class="middle">
+
+    <h2> By book title</h2>
+
+    <form class="form" action="{{ url_for('search_by_title') }}" method="post">
+
+
+      <label class="sr-only" for="inlineFormInputGroup">Book title</label>
+      <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Enter book title" name="book_title" required>
+      </div>
+      <br>
+
+
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+
+  </div>
+
+  <div class="middle">
+
+    <h2>By author name</h2>
+
+    <form class="form" action="{{ url_for('search_by_author') }}" method="post">
+
+
+      <label class="sr-only" for="inlineFormInputGroup">Author name</label>
+      <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Enter author name" name="author" required>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+  </div>
 
   {% else %}
 

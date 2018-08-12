@@ -14,4 +14,72 @@
 {
   background-color: blue;
 }
+
+
+.book a
+{
+  color:#000000;
+}
+a
+{
+  text-decoration: none;
+}
+
+.book
+{
+  display:inline-block;
+  margin:1%;
+  background-color:#6495ed;
+  width:45%;
+  padding:1%;
+  text-align:center
+}
+
+@media(max-width:900px)
+{
+  .book{
+    width:90% !important;
+  }
+}
+
+.bookTitle
+{
+  font-size:20px;
+}
+
+.bookAuthor
+{
+  font-size:15px;
+}
+
+.fa .fa-book
+{
+  font-size:48px;
+}
+
+@media(max-width:500px)
+{
+  .bookTitle{
+    font-size:15px;
+  }
+
+  .bookAuthor
+  {
+    font-size:12px;
+  }
+
+}
+
+/*Book page main and section */
+main
+{
+  text-align: center;
+  margin: 2%;
+}
+
+section
+{
+  text-align: center;
+}
+
 /*# sourceMappingURL=styles.css.map */
