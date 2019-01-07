@@ -73,13 +73,11 @@ a
 /*Book page main and section */
 main
 {
-  text-align: center;
+  text-align: left;
   margin: 2%;
 }
 
 section
 {
-  text-align: center;
+  text-align: left;
 }
-
-/*# sourceMappingURL=styles.css.map */

@@ -6,9 +6,14 @@ from flask import Flask, session, render_template, request, redirect, url_for, j
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flask_jsglue import JSGlue
+
+
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
+
+
 
 
 # Check for environment variable
@@ -20,8 +25,9 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+
 # Set up database
-engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine(os.getenv("DATABASE_URL"), pool_size=20, max_overflow=-1)
 db = scoped_session(sessionmaker(bind=engine))
 
 
@@ -50,8 +56,6 @@ def login():
 
     # check if  the password is correct
     hashPassword = data[0][2]
-    print(hashPassword)
-    print(data)
     if pbkdf2_sha256.verify(password, hashPassword) is False:
         message = "Incorrect password, try again bruh!!"
         return render_template("login.html", message=message, error=True)
@@ -163,7 +167,7 @@ def search_by_title():
     """
         Search book only by title
     """
-    search_info = request.form.get("book_title")
+    search_info = request.form.get("book_title").lower()
     results = (db.execute("SELECT id, isbn, title, author, year FROM books WHERE LOWER(title) LIKE :title",
               {"title": "%" + search_info + "%"})).fetchall()
     return render_template("searchResult.html", results = results, searchInfo= search_info, byCategory="book title")
@@ -175,11 +179,10 @@ def search_by_author():
     """
         Search book only by author name
     """
-    search_info = request.form.get("author")
+    search_info = request.form.get("author").strip()
     results = (db.execute("SELECT id, isbn, title, author, year FROM books WHERE LOWER(author) LIKE :author",
                           {"author": "%" + search_info + "%"})).fetchall()
     return render_template("searchResult.html", results = results, searchInfo= search_info, byCategory="author name")
-
 
 
 
@@ -203,32 +206,54 @@ def book_page(title, author, id, isbn):
     reviews =(db.execute("SELECT username, content, stars FROM reviews JOIN users ON reviews.user_id =  users.id WHERE book_id = :id AND user_id<> :user_id" ,
                         {"id":id, "user_id":session["user_id"]})).fetchall()
 
+
+    #get average rating and total ratings of the book
+    ratings = (db.execute("SELECT AVG(stars), COUNT(stars) FROM reviews WHERE book_id = :id", {"id":id})).fetchall()
+    number_ratings = ratings[0][1]
+    average_ratings= ratings[0][0]
+
     #save current book informations in the session
     session["book_id"] = int(id)
     session["book_title"] = title
     session["book_author"] = author
     session["isbn"] = isbn
 
-
     #check if the user already submitted a review for this book
-    userReview = (db.execute("SELECT * FROM reviews  WHERE book_id = :book_id AND user_id= :user_id ",
+    userReview = (db.execute("SELECT stars,content FROM reviews  WHERE book_id = :book_id AND user_id= :user_id ",
                     {"book_id":session["book_id"], "user_id":session["user_id"]})).fetchall()
     canSubmitReview = len(userReview) == 0
+
+    if not canSubmitReview:
+        user_rating = userReview[0][0]
+        user_review = userReview[0][1]
+        userReview = {"rating":user_rating, "review":user_review}
+
+    else:
+        userReview = {"rating":None, "review":None}
 
     #check if the book is in the user list of books
     favBook = db.execute("SELECT favoritebooks_id FROM users WHERE id=:id",
                           {"id":session["user_id"]}).fetchall()[0][0]
-    print(favBook)
-    isFavBook = session["book_id"] in favBook
-    print(isFavBook)
+
+    if favBook == None:
+        isFavBook = False
+    else:
+        isFavBook = session["book_id"] in favBook
 
     #get reviews and ratings info of the good from goodread api
     res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "k1L45BzwtDGQRQmnXw4w", "isbns": isbn})
     json = res.json()["books"]
+
+    otherRatings = ""
+    for review in reviews:
+        otherRatings +=","
+        otherRatings += str(review[2])
+
     return render_template("bookpage.html", title=title, author=author,
                           isbn=isbn, publicationYear=year, reviews=reviews,
                           canSubmitReview=canSubmitReview, userReview=userReview, json=res.json()["books"],
-                          isFavBook=isFavBook, id=session["book_id"])
+                          isFavBook=isFavBook, id=session["book_id"], numberRatings=number_ratings, averageRatings=average_ratings, otherRatings=otherRatings)
+
 
 @app.route("/submitReview", methods=["POST"])
 def submit_review():
@@ -236,15 +261,20 @@ def submit_review():
         Submit a review
     """
     review = request.form.get("review")
-    print(review)
     rating = request.form.get("rating")
+
+    print(f"review : {review}")
+    print(f"rating: {rating}")
+
 
 
     db.execute("INSERT INTO reviews(user_id, book_id, content, stars)VALUES(:user_id, :book_id, :content, :stars)",
                 {"user_id":session["user_id"], "book_id": session["book_id"], "content":review, "stars":rating})
     db.commit()
 
-    return redirect(url_for("book_page", title=session["book_title"], author= session["book_author"],id=session["book_id"], isbn=session["isbn"]))
+    return jsonify({"review":review, "rating":rating})
+
+
 
 @app.route("/api/<isbn>")
 def book_api(isbn):
@@ -295,7 +325,11 @@ def add_book(id):
     #check if the book is in the user list of books
     favBook = db.execute("SELECT favoritebooks_id FROM users WHERE id=:id",
                           {"id":session["user_id"]}).fetchall()[0][0]
-    isFavBook = session["book_id"] in favBook
+
+    if favBook == None:
+        isFavBook = False
+    else:
+        isFavBook = session["book_id"] in favBook
 
     if not isFavBook:
         db.execute("UPDATE users SET favoritebooks_id=favoritebooks_id || '{:book_id}' WHERE id=:id",

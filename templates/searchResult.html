@@ -6,22 +6,27 @@
 {% block body %}
 
   {% if byCategory %}
-    <h1> Search results by {{byCategory}}</h1>
+    <h1 style="margin:10px;"> Search results by {{byCategory}}</h1>
     <table class="table table-striped">
-      {% for result in results %}
 
-          <tr>
-            <td> <i class="fa fa-book"></i> </td>
-            <td>
-              <a href="{{ url_for('book_page', title=result.title, author=result.author, id=result.id, isbn=result.isbn) }}">
-                  <span class="bookTitle"> {{result.title}}  </span>   <span class="bookAuthor"> by {{result.author}}</span>
-              </a>
-            </td>
-          </tr>
-      {% endfor %}
+      {% if results %}
+        {% for result in results %}
+
+            <tr>
+              <td> <i class="fa fa-book"></i> </td>
+              <td>
+                <a href="{{ url_for('book_page', title=result.title, author=result.author, id=result.id, isbn=result.isbn) }}">
+                    <span class="bookTitle"> {{result.title}}  </span>   <span class="bookAuthor"> by {{result.author}}</span>
+                </a>
+              </td>
+            </tr>
+        {% endfor %}
+      {% else %}
+        <p style="margin:10px"> No such book found in our records, make your spell is correct. Or we may not have the book on the website </p>
+
+      {% endif %}
+
     </table>
-
-
 
   {% else %}
 
@@ -80,6 +85,7 @@
         {% if isbn %}
           <table class="table table-striped">
             {% for books in isbn %}
+            jrf
               <tr>
                 <td> <i class="fa fa-book"></i> </td>
                 <td>
