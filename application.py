@@ -71,23 +71,15 @@ def signUp():
     if request.method == "GET":
         return render_template("signup.html")
 
-    email = request.form.get("email")
     username = request.form.get("username")
     password = request.form.get("password")
     password1 = request.form.get("passwordConfirmation")
 
     # check if username is already taken
-    database = db.execute("SELECT username  FROM users WHERE username = :username",
+    database = db.execute("SELECT username FROM users WHERE username = :username",
                           {"username": username}).fetchall()
     if len(database) >= 1:
         message = "username already taken, sorry"
-        return render_template("signup.html", message=message, error=True)
-
-    # check if email was already taken
-    database = db.execute("SELECT email  FROM users WHERE email = :email",
-                          {"email": email}).fetchall()
-    if len(database) >= 1:
-        message = "Email already taken, bruh! Sorry"
         return render_template("signup.html", message=message, error=True)
 
     # check if password matches
@@ -98,8 +90,8 @@ def signUp():
     # hash the password
     hash = pbkdf2_sha256.hash(password)
 
-    db.execute("INSERT INTO users(email, username, hashPassword) VALUES(:email, :username, :hashPassword)",
-               {"email": email, "username": username, "hashPassword": hash})
+    db.execute("INSERT INTO users(username, hashPassword) VALUES(:username, :hashPassword)",
+               {"username": username, "hashPassword": hash})
     db.commit()
 
     user_id = (db.execute("SELECT id FROM users WHERE username = :username",
@@ -370,8 +362,9 @@ def profile():
         Go to the user profile page
     """
 
-    user = (db.execute("SELECT email, username FROM users WHERE id=:id",
+    user = (db.execute("SELECT username FROM users WHERE id=:id",
                       {"id":session["user_id"]})).fetchall()
+    print(f"user {user}")
     return render_template("userProfile.html", user=user)
 
 
@@ -472,41 +465,3 @@ def update_username():
     db.commit()
     message = "Your username has been updated"
     return render_template("updateUsername.html", message=message, success=True)
-
-
-@app.route("/update_email", methods=["GET", "POST"])
-def update_email():
-    """
-        Allow user to update their email address
-    """
-    if request.method == "GET":
-        return render_template("updateEmail.html")
-    new_email = request.form.get("new_email")
-    password = request.form.get("password")
-
-    #check if email has already been taken
-    check = (db.execute("SELECT id FROM users Where email = :email",
-             {"email":new_email})).fetchall()
-    if len(check) > 0:
-        check = check[0]
-
-        #if the user entered their own email
-        if check[0] == session["user_id"]:
-            message = "Bro, this is your email"
-            return render_template("updateUsername.html", message=message, error=True)
-        else: #if they entered someone else Username
-            message = "This email has already been taking"
-            return render_template("updateEmail.html", message=message, error=True)
-
-    #if the user password is Incorrect
-    hash_password =(db.execute("SELECT hashpassword FROM users WHERE id = :id",
-                    {"id":session["user_id"]})).fetchall()[0][0]
-    if pbkdf2_sha256.verify(password, hash_password) is False:
-        message = "Incorrect password, try again!"
-        return render_template("updateEmail.html", message=message, error=True)
-
-    #update email if everything went well which mean it passsed all test above
-    db.execute("UPDATE users SET email=:email WHERE id=:id",{"email" : new_email, "id":session["user_id"]})
-    db.commit()
-    message = "Your email has been updated"
-    return render_template("updateEmail.html", message=message, success=True)

@@ -13,10 +13,6 @@
               <th scope="row">Username</th>
               <td>{{n.username}}</td>
             </tr>
-            <tr>
-              <th scope="row">Email address</th>
-              <td>{{n.email}}</td>
-            </tr>
           </tbody>
         </table>
       {% endfor %}
@@ -30,10 +26,6 @@
 
           <td>
             <a href="{{ url_for('update_username') }}" >Change your username  </a>
-          </td>
-
-          <td>
-            <a href="{{ url_for('update_email') }}" >  Change your email address</a>
           </td>
         <tr>
       </table>
