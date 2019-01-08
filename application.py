@@ -6,9 +6,6 @@ from flask import Flask, session, render_template, request, redirect, url_for, j
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from flask_jsglue import JSGlue
-
-
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
