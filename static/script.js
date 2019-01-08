@@ -12,19 +12,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // fill star rating for the user
-  let rating_div = document.querySelector("#user_rating");
-  let rating = parseFloat(document.querySelector("#user_rating_data").innerHTML);
-  let user_rating = raterJs( {
-    element:rating_div,
+  let editrating_div = document.querySelector("#edit_user_rating");
+  let edit_rating = raterJs( {
+    element:editrating_div,
     rateCallback:function rateCallback(rating, done) {
      this.setRating(rating);
      done();
    }
  });
-  user_rating.setRating(rating);
-
-  if (rating_div.classList[0] == "disable_rating")
-      user_rating.disable();
 
 
   try{
@@ -40,38 +35,62 @@ document.addEventListener('DOMContentLoaded', function () {
       request.onload = function()
       {
         let response = JSON.parse(request.responseText);
-        console.log(response);
-        document.querySelector("#before_review").style.display = "none";
-        document.querySelector("#after_review").style.display = "block";
+        document.querySelector(".review").style.display = "block";
         document.querySelector("#review_content").innerHTML = response.review;
+        document.querySelector("#review").value="";
 
+        // fill star rating for the user
+        let rating_div = document.querySelector("#user_rating");
+        rating_div.innerHTML = "";
+        let rating = edit_rating.getRating();
         let user_rating = raterJs( {
-          element:document.querySelector("#after_user_rating"),
-          rateCallback:function rateCallback(rating, done) {
-           this.setRating(rating);
-           done();
-         }
+          element:rating_div,
+
        });
 
-        let rating = parseFloat(response.rating);
         user_rating.setRating(rating);
         user_rating.disable();
-      };
 
+      };
 
       //send the review and rating submitted by the user to the server
       let review = document.querySelector("#review").value;
       let data = new FormData();
       data.append("review",review);
-      data.append("rating", user_rating.getRating());
+      data.append("rating", edit_rating.getRating());
       request.send(data);
     };
 
   }
   catch(err){}
+  // fill star rating for the user
+  let rating_div = document.querySelector("#user_rating");
+  let rating = parseFloat(document.querySelector("#user_rating_data").innerHTML);
+  let user_rating = raterJs( {
+    element:rating_div,
+    rateCallback:function rateCallback(rating, done) {
+     this.setRating(rating);
+     done();
+   }
+ });
+
+  user_rating.setRating(rating);
+  user_rating.disable();
+
+//fill star for rating from good read
+// fill star rating for the user
+  let goodread = document.querySelector("#goodread_rating");
+  let goodread_rating = parseFloat(document.querySelector("#goodread_rating_data").innerHTML);
+  let g_rating = raterJs( {
+    element:goodread,
+  });
+
+  g_rating.setRating(goodread_rating);
+  g_rating.disable();
 
 
 
+   //other users reviews
   let  otherRating_span = document.querySelectorAll(".other_rating");
   let len = otherRating_span.length;
 
@@ -91,28 +110,4 @@ for(var i =0; i < len; i++){
     average_rating.setRating(rating);
     average_rating.disable();
   }
-
-  document.querySelector("#edit_button").onclick = function()
-  {
-    document.querySelector(".review").style.display = "none";
-    console.log(document.querySelector("#edit_review"));
-    document.querySelector("#edit_review").style.display = "";
-
-    let edit_rating = document.querySelector("#user_rating_edit");
-
-    let user_rating = raterJs( {
-      element:edit_rating,
-      rateCallback:function rateCallback(rating, done) {
-       this.setRating(rating);
-       done();
-     }
-   });
-
-   
- };
-
-
-
-
-
 });

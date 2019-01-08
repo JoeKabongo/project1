@@ -8,6 +8,7 @@
       <span id="average_rating">{{averageRatings}}</span>
       <span id="user_rating_data">{{userReview.rating}}</span>
       <span id="others_rating">{{otherRatings}}</span>
+      <span id="goodread_rating_data">{{goodreadR}}</span>
   </div>
   <main>
     <section class="bookInfo">
@@ -41,78 +42,65 @@
 
       <h4> Your review here</h4>
 
-      {% if canSubmitReview %}
+      {% if canEditReview %}
+
+      <div class="review">
+        <table class="table table-striped">
+              <tr>
+                <td> <b>You</b> rated it &nbsp;&nbsp;&nbsp;&nbsp<div id="user_rating" class="disable_rating"></div></td>
+              </tr>
+
+        </table>
+        <p id="review_content">    {{userReview.review}} </p>
+        <hr>
 
 
-          <div id="before_review">
-            <div id="user_rating" class=""></div>
+      </div>
 
-            <textarea class="form-control" placeholder="Write your review" id="review" value="" style="width:90%">
-            </textarea>
-            <button type=""  id="submitReview" class="btn btn-primary"> Submit review</button>
+      <h6> Edit review </h6>
 
-          </div>
-
-          <div id="after_review" style="display:none;">
-            <table class="table table-striped">
-                  <tr>
-                    <td> You rated it &nbsp;&nbsp;&nbsp;&nbsp<div id="after_user_rating"></div></td>
-                    <td id="review_content">    {{userReview.review}} </td>
-                  </tr>
-
-            </table>
-            <button type="submit"   class="btn btn-primary"> Edit </button>
-
-          </div>
+      <div>
+        <div id="edit_user_rating"></div>
 
 
+          <textarea class="form-control" placeholder="Write your review" id="review" value="" style="width:90%" name="review">
+          </textarea> <br>
+          <button type="submit"  id="submitReview" class="btn btn-primary"> Edit review</button>
+
+      </div>
 
       {% else %}
 
+      <div class="review" style="display:none;">
+        <table class="table table-striped">
+              <tr>
+                <td> <b>You</b> rated it &nbsp;&nbsp;&nbsp;&nbsp<div id="user_rating" class="disable_rating"></div></td>
+              </tr>
+        </table><br>
+        <span id="review_content"> </span> <hr>
 
-          <div class="review">
-            <table class="table table-striped">
-                  <tr>
-                    <td> You rated it &nbsp;&nbsp;&nbsp;&nbsp<div id="user_rating" class="disable_rating"></div></td>
-                    <td>    {{userReview.review}} </td>
-                  </tr>
 
-            </table>
-            <button id="edit_button"  class="btn btn-primary"> Edit </button>
+      </div>
 
-          </div>
+        <h6> Submit review </h6>
 
-          <div id="edit_review" style="display:none;">
-            <div id="user_rating_edit" class=""></div>
+        <div>
+          <div id="edit_user_rating" ></div>
 
-            <textarea class="form-control" placeholder="Write your review" id="review" value="" style="width:90%">
-            </textarea><br>
-            <button type=""  id="submitReview" class="btn btn-primary"> Submit review</button>
-            <button class="btn btn-primary"> Cancel edit </button>
+          <textarea class="form-control" placeholder="Write your review" id="review" value="" style="width:90%">
+          </textarea> <br>
+          <button type=""  id="submitReview" class="btn btn-primary"> Submit review</button>
 
-          </div>
-
+        </div>
 
       {% endif %}
+
+
 
 
       <br><br><br>
       <h4> Others users reviews</h4>
       {% if reviews %}
-      <table class="table table-striped">
-        {% for review in reviews %}
-          <!--  <tr>
-              <td>
-                  <b>{{review.username}} </b>rated it <span class="other_rating"></span>
-              </td>
-
-              <td>
-                {{review.content}}
-              </td>
-            </tr>
-            {% endfor %} -->
-
-      </table>
 
       {% for review in reviews %}
               <b>{{review.username}} </b>rated it <span class="other_rating"></span> <br>
@@ -142,10 +130,10 @@
               </tr>
 
               <tr>
-                <td> Average ratings</td>
-                <td> {{data.average_rating}}</td>
+                <td> Average rating</td>
+                <td > <span id="goodread_rating"> </span> </td>
+              </tr> 
 
-              </tr>
           {% endfor %}
         </table>
     </section>

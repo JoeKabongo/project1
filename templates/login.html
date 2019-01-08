@@ -5,6 +5,14 @@
 
 {% block body %}
 <div class="middle" >
+  <h2> Books' reviews</h2>
+  <ul>
+    <li> Search for books (We have 5000 books far, more will be added)</li>
+    <li> Look at what other says about books </li>
+    <li> Help other by leaving a review</li>
+  </ul>
+
+
   <h2> Log in </h2>
   <form class="form" action="{{ url_for('login') }}" method="post">
 
@@ -31,6 +39,9 @@
   </form>
 
   <p> Don't  have an account? <a href="{{ url_for('signUp') }}"> sign up </a> <p>
+
+  
+
 
 </div>
 

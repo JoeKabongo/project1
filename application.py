@@ -218,9 +218,9 @@ def book_page(title, author, id, isbn):
     #check if the user already submitted a review for this book
     userReview = (db.execute("SELECT stars,content FROM reviews  WHERE book_id = :book_id AND user_id= :user_id ",
                     {"book_id":session["book_id"], "user_id":session["user_id"]})).fetchall()
-    canSubmitReview = len(userReview) == 0
+    canEditReview = not len(userReview) == 0
 
-    if not canSubmitReview:
+    if  canEditReview:
         user_rating = userReview[0][0]
         user_review = userReview[0][1]
         userReview = {"rating":user_rating, "review":user_review}
@@ -246,9 +246,11 @@ def book_page(title, author, id, isbn):
         otherRatings +=","
         otherRatings += str(review[2])
 
+    goodreadR=res.json()["books"][0]["average_rating"]
+
     return render_template("bookpage.html", title=title, author=author,
                           isbn=isbn, publicationYear=year, reviews=reviews,
-                          canSubmitReview=canSubmitReview, userReview=userReview, json=res.json()["books"],
+                          canEditReview=canEditReview, goodreadR=goodreadR,userReview=userReview, json=res.json()["books"],
                           isFavBook=isFavBook, id=session["book_id"], numberRatings=number_ratings, averageRatings=average_ratings, otherRatings=otherRatings)
 
 
@@ -257,18 +259,29 @@ def submit_review():
     """
         Submit a review
     """
-    review = request.form.get("review")
+    review = request.form.get("review").strip()
     rating = request.form.get("rating")
 
     print(f"review : {review}")
     print(f"rating: {rating}")
 
 
+    check = (db.execute("SELECT * FROM reviews WHERE book_id=:book_id AND user_id=:user_id",
+                {"book_id":session["book_id"], "user_id":session["user_id"]})).fetchall()
 
-    db.execute("INSERT INTO reviews(user_id, book_id, content, stars)VALUES(:user_id, :book_id, :content, :stars)",
-                {"user_id":session["user_id"], "book_id": session["book_id"], "content":review, "stars":rating})
-    db.commit()
+    print(f"check {check} ")
 
+
+    if len(check)==0:
+        db.execute("INSERT INTO reviews(user_id, book_id, content, stars)VALUES(:user_id, :book_id, :content, :stars)",
+                    {"user_id":session["user_id"], "book_id": session["book_id"], "content":review, "stars":rating})
+        db.commit()
+        print("something is wrong my man")
+    else:
+        db.execute("UPDATE reviews set stars=:star ,content=:review WHERE user_id=:user_id AND book_id=:book_id",
+                    {"star": rating, "review": review, "user_id":session["user_id"], "book_id":session["book_id"]})
+        db.commit()
+        print("we are in the alert thinging here")
     return jsonify({"review":review, "rating":rating})
 
 
