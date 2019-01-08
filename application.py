@@ -373,6 +373,7 @@ def user_book():
             {"id":session["user_id"]})).fetchall()[0][0]
 
     my_list = []
+    print(f"book {books}")
     for id in books:
         book = (db.execute("SELECT * FROM books WHERE id=:id",
                 {"id":id})).fetchall()[0]
