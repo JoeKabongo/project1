@@ -59,7 +59,7 @@ def login():
 
     # save user session id
     session["user_id"] = data[0][0]
-
+    db.close()
     return redirect(url_for("index"))
 
 
@@ -96,6 +96,8 @@ def signUp():
 
     user_id = (db.execute("SELECT id FROM users WHERE username = :username",
                           {"username": username}).fetchall())[0]
+
+    db.close()
 
     # save user session id
     session["user_id"] = user_id[0]
@@ -135,6 +137,7 @@ def search():
     isbn = (db.execute("SELECT id , isbn, title, author, year FROM books WHERE LOWER(isbn) LIKE :searchInfo",
                        {"searchInfo": "%" + searchInfo + "%"})).fetchall()
 
+    db.close()
     return render_template("searchResult.html", titles=titles, authors=authors, isbn=isbn, searchInfo=searchInfo)
 
 
@@ -147,6 +150,7 @@ def search_by_isbn():
     search_info = request.form.get("isbn")
     results = (db.execute("SELECT id , isbn, title, author, year FROM books WHERE LOWER(isbn) LIKE :isbn",
             {"isbn": "%" + search_info + "%"})).fetchall()
+    db.close()
     return render_template("searchResult.html", results = results, searchInfo= search_info, byCategory="isbn")
 
 
@@ -159,6 +163,7 @@ def search_by_title():
     search_info = request.form.get("book_title").lower()
     results = (db.execute("SELECT id, isbn, title, author, year FROM books WHERE LOWER(title) LIKE :title",
               {"title": "%" + search_info + "%"})).fetchall()
+    db.close()
     return render_template("searchResult.html", results = results, searchInfo= search_info, byCategory="book title")
 
 
@@ -171,6 +176,7 @@ def search_by_author():
     search_info = request.form.get("author").strip()
     results = (db.execute("SELECT id, isbn, title, author, year FROM books WHERE LOWER(author) LIKE :author",
                           {"author": "%" + search_info + "%"})).fetchall()
+    db.close()
     return render_template("searchResult.html", results = results, searchInfo= search_info, byCategory="author name")
 
 
@@ -240,6 +246,8 @@ def book_page(title, author, id, isbn):
 
     goodreadR=res.json()["books"][0]["average_rating"]
 
+    db.close()
+
     return render_template("bookpage.html", title=title, author=author,
                           isbn=isbn, publicationYear=year, reviews=reviews,
                           canEditReview=canEditReview, goodreadR=goodreadR,userReview=userReview, json=res.json()["books"],
@@ -253,10 +261,6 @@ def submit_review():
     """
     review = request.form.get("review").strip()
     rating = request.form.get("rating")
-
-    print(f"review : {review}")
-    print(f"rating: {rating}")
-
 
     check = (db.execute("SELECT * FROM reviews WHERE book_id=:book_id AND user_id=:user_id",
                 {"book_id":session["book_id"], "user_id":session["user_id"]})).fetchall()
@@ -273,7 +277,8 @@ def submit_review():
         db.execute("UPDATE reviews set stars=:star ,content=:review WHERE user_id=:user_id AND book_id=:book_id",
                     {"star": rating, "review": review, "user_id":session["user_id"], "book_id":session["book_id"]})
         db.commit()
-        print("we are in the alert thinging here")
+
+    db.close()
     return jsonify({"review":review, "rating":rating})
 
 
@@ -307,7 +312,7 @@ def book_api(isbn):
         review_count = r[0]
         average_score=r[1]
 
-
+    db.close()
     return jsonify({
             "title": title,
             "author": author,
@@ -338,6 +343,8 @@ def add_book(id):
                     {"book_id":id,"id":session["user_id"]})
         db.commit()
 
+    db.close()
+
     return redirect(url_for("user_book", title=session["book_title"], author= session["book_author"],id=session["book_id"], isbn=session["isbn"]))
 
 
@@ -350,6 +357,7 @@ def remove_book(id):
     db.execute("UPDATE users SET favoritebooks_id=array_remove(favoritebooks_id, ':book_id')  WHERE id=:id",
                 {"book_id":int(id),"id":session["user_id"]})
     db.commit()
+    db.close()
 
     return redirect(url_for("user_book", title=session["book_title"], author= session["book_author"],id=session["book_id"], isbn=session["isbn"]))
 
@@ -364,7 +372,7 @@ def profile():
 
     user = (db.execute("SELECT username FROM users WHERE id=:id",
                       {"id":session["user_id"]})).fetchall()
-    print(f"user {user}")
+    db.close()
     return render_template("userProfile.html", user=user)
 
 
@@ -384,7 +392,7 @@ def user_book():
             book = (db.execute("SELECT * FROM books WHERE id=:id",
                     {"id":id})).fetchall()[0]
             my_list.append(book)
-
+    db.close()
     return render_template("userBook.html", books=my_list)
 
 @app.route("/update_password", methods=["GET", "POST"])
@@ -425,6 +433,7 @@ def update_password():
     db.execute("UPDATE users SET hashpassword=:hash WHERE id=:id",{"hash" : hash, "id":session["user_id"]})
     db.commit()
     message = "Your password has been updated"
+    db.close()
     return render_template("updatePassword.html", message=message, success=True)
 
 
@@ -464,4 +473,5 @@ def update_username():
     db.execute("UPDATE users SET username=:username WHERE id=:id",{"username" : new_username, "id":session["user_id"]})
     db.commit()
     message = "Your username has been updated"
+    db.close()
     return render_template("updateUsername.html", message=message, success=True)
